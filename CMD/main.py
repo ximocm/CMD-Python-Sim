@@ -1,6 +1,6 @@
 from functs import cls, Load, bcolors, login, SUDOPASS, USERPASS, pack, help
 from folders import Folder, File
-from programs import aptget, cypher
+from programs import aptget, cypher, MailProgram, BankCocoon
 import getpass
 import pickle
 
@@ -22,8 +22,8 @@ root = Folder('root', None)
 while True:
     inp = input("Do you want to load the last session? (y/n): ")
     if inp == 'y':
-        root = pickle.load(open("root.p", "rb"))
-        cache = pickle.load(open("cache.p", "rb"))
+        root = pickle.load(open("CMD/pickle/root.p", "rb"))
+        cache = pickle.load(open("CMD/pickle/cache.p", "rb"))
         break
     elif inp == 'n':
         root.mkdir('home')
@@ -55,8 +55,8 @@ while True:
     instruction = input(user + ":" + bcolors.OKBLUE + current_folder.get_path() +bcolors.ENDC+ "-𝄢 ").split(" ")
     hist.add(instruction)
     if instruction[0] == 'exit':
-        pickle.dump(cache, open("cache.p", "wb"))
-        pickle.dump(root, open("root.p", "wb"))
+        pickle.dump(cache, open("CMD/pickle/cache.p", "wb"))
+        pickle.dump(root, open("CMD/pickle/root.p", "wb"))
         print ("Exiting...")
         break
     elif instruction[0] == '':
@@ -207,32 +207,24 @@ while True:
 
     elif instruction[0] == 'cypher':
         if cache.isinstalled('cypher'):
-            if len(instruction) < 4:
-                print(bcolors.WARNING + 'cypher: missing operand' + bcolors.ENDC)
-            else:
-                if instruction[1] == '-c':
-                    if instruction[2] == 'encode':
-                        final = cypher.caesar_encode(instruction[3], int(instruction[4]))
-                        if len(instruction) > 5:
-                            if instruction[5] == '>':
-                                current_folder.touch(instruction[6])
-                                file = current_folder.get_file(instruction[6])
-                                file.write(final)
-                        else:
-                            print(final)
-                        
-                    elif instruction[2] == 'decode':
-                        final = cypher.caesar_decode(instruction[3], int(instruction[4]))
-                        if len(instruction) > 5:
-                            if instruction[5] == '>':
-                                current_folder.touch(instruction[6])
-                                file = current_folder.get_file(instruction[6])
-                                file.write(final)
-                        else:
-                            print(final)
+            cypher.main()
         else:
             print(bcolors.WARNING + 'cypher: command not found' + bcolors.ENDC)
             print(bcolors.WARNING + 'Install cypher with apt-get install cypher' + bcolors.ENDC)
+
+    elif instruction[0] == 'mail':
+        if cache.isinstalled('mail'):
+            MailProgram.main()
+        else:
+            print(bcolors.WARNING + 'mail: command not found' + bcolors.ENDC)
+            print(bcolors.WARNING + 'Install mail with apt-get install mail' + bcolors.ENDC)
+
+    elif instruction[0] == 'CocoonBank':
+        if cache.isinstalled('CocoonBank'):
+            BankCocoon.main()
+        else:
+            print(bcolors.WARNING + 'CocoonBank: command not found' + bcolors.ENDC)
+            print(bcolors.WARNING + 'Install CocoonBank with apt-get install CocoonBank' + bcolors.ENDC)
 
     else:
         print(bcolors.WARNING + 'Command not found' + bcolors.ENDC)

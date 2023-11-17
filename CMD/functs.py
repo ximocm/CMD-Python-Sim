@@ -2,7 +2,8 @@ import time
 import os
 import getpass
 from folders import Folder, File
-from playsound import playsound
+from pydub import AudioSegment
+from pydub.playback import play
 
 SUDOPASS = "ksem"
 USERPASS = "1234"
@@ -67,19 +68,27 @@ def Load():
     cls()
 
 def login():
-    playsound('Sounds/login.wav')
-    user = input("Enter your username: ")
-    passw = getpass.getpass("Enter your password: ")
-    if user == "user1" and passw == USERPASS:
-        print(bcolors.OKGREEN + "Welcome user1" + bcolors.ENDC)
-        sudo = False
-    elif user == "root" and passw == SUDOPASS:
-        print(bcolors.OKGREEN + "Welcome root" + bcolors.ENDC)
-        sudo = True
-    else:
-        print(bcolors.FAIL + "Wrong username or password!" + bcolors.ENDC)
-        exit()
-    time.sleep(1.5)
+    song = AudioSegment.from_mp3("CMD/sounds/login.wav")
+    play(song)
+    attempts = 0
+    while(attempts < 3):
+        user = input("Enter your username: ")
+        passw = getpass.getpass("Enter your password: ")
+        if user == "user1" and passw == USERPASS:
+            print(bcolors.OKGREEN + "Welcome user1" + bcolors.ENDC)
+            sudo = False
+            break
+        elif user == "root" and passw == SUDOPASS:
+            print(bcolors.OKGREEN + "Welcome root" + bcolors.ENDC)
+            sudo = True
+            break
+        else:
+            print(bcolors.FAIL + "Wrong username or password!" + bcolors.ENDC+"\n\n")
+            attempts += 1
+        time.sleep(1.5)
+    if attempts == 3:
+            print(bcolors.FAIL + "Too many attempts!" + bcolors.ENDC)
+            time.sleep(1.5)
     return user, passw, sudo
 
 def help():
@@ -91,7 +100,8 @@ def help():
     print("apt-get[operand][package] - installs packages")
     print("     operand - list, install, remove")
     print("     package - the name of the package")
-    print("cypher[type][en/decode][msg][n][operand]?[folder]? - encrypts and decrypts text")
+    print("cypher - opens the cypher program")
+    print("mail - opens the mail program")
     print("ls - lists the files and folders in the current directory")
     print("cd[path] - changes the current directory")
     print("mkdir[name] - creates a new folder")
